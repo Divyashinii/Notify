@@ -20,4 +20,4 @@ In this project, we just basically create 2 distinct cloud resources (1 storage 
 | Logic App | notifyprojlapp | An Azure service capable of multiple features, but in this case, it helps to send emails to the users about their image upload! |
 
 ### Architecture diagram
-![Architecture diagram](./Architecture/img.png)
+![Architecture diagram](./Architecture/img.jpg)

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Azure Blob Upload</title>
+    <style>
+      /* Reset */
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: linear-gradient(135deg, #74ebd5, #9face6);
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .container {
+        background-color: white;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        max-width: 400px;
+        text-align: center;
+        transition: transform 0.3s ease-in-out;
+      }
+
+      .container:hover {
+        transform: scale(1.02);
+      }
+
+      h2 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      input[type="file"] {
+        margin-bottom: 15px;
+        display: block;
+        width: 100%;
+        padding: 10px;
+        border: 2px dashed #9face6;
+        border-radius: 10px;
+        background-color: #f9f9f9;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      input[type="file"]:hover {
+        background-color: #eef1ff;
+      }
+
+      button {
+        padding: 12px 25px;
+        background-color: #6c63ff;
+        color: white;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      button:hover {
+        background-color: #574fd6;
+      }
+
+      #status {
+        margin-top: 15px;
+        font-size: 0.95em;
+        color: #444;
+      }
+
+      @media (max-width: 480px) {
+        .container {
+          padding: 20px;
+        }
+
+        h2 {
+          font-size: 1.4em;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h2>Upload Image to Azure Blob Storage</h2>
+      <input type="file" id="fileInput" accept="image/*" />
+      <button onclick="uploadFile()">Upload</button>
+      <p id="status"></p>
+    </div>
+
+    <script>
+      async function uploadFile() {
+        const fileInput = document.getElementById("fileInput");
+        const status = document.getElementById("status");
+
+        if (!fileInput.files.length) {
+          status.textContent = "Please select a file first.";
+          return;
+        }
+
+        const file = fileInput.files[0];
+
+        const storageAccount = "your-storage-account-name";
+        const containerName = "images";
+        const sasToken =
+          "enter-your-SAS-token";
+
+        const sas = sasToken.startsWith("?") ? sasToken : `?${sasToken}`;
+        const blobUrl = `https://${storageAccount}.blob.core.windows.net/${containerName}/${file.name}${sas}`;
+
+        try {
+          const response = await fetch(blobUrl, {
+            method: "PUT",
+            headers: {
+              "x-ms-blob-type": "BlockBlob",
+              "Content-Type": file.type,
+            },
+            body: file,
+          });
+
+          if (response.ok) {
+            status.textContent = `✅ Upload successful: ${file.name}`;
+            status.style.color = "green";
+          } else {
+            status.textContent = `❌ Upload failed: ${response.statusText}`;
+            status.style.color = "red";
+          }
+        } catch (error) {
+          console.error(error);
+          status.textContent = `⚠️ Upload error: ${error.message}`;
+          status.style.color = "red";
+        }
+      }
+    </script>
+  </body>
+</html>
